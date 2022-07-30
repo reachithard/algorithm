@@ -47,23 +47,22 @@ uint32_t TwoDivideSearch(const vector<int> &nums, int target) {
   }
   return -1;
 
-//   // [left, right)
-//   uint32_t left = 0;
-//   uint32_t right = nums.size();
-//   while (left < right)
-//   {
-//     /* code */
-//     uint32_t mid = (right - left) / 2 + left;
-//     if (nums[mid] < target) {
-//       left = mid + 1;
-//     } else if (nums[mid] > target) {
-//       right = mid;
-//     } else {
-//       return mid;
-//     }
-//   }
-//   return -1;
-  
+  //   // [left, right)
+  //   uint32_t left = 0;
+  //   uint32_t right = nums.size();
+  //   while (left < right)
+  //   {
+  //     /* code */
+  //     uint32_t mid = (right - left) / 2 + left;
+  //     if (nums[mid] < target) {
+  //       left = mid + 1;
+  //     } else if (nums[mid] > target) {
+  //       right = mid;
+  //     } else {
+  //       return mid;
+  //     }
+  //   }
+  //   return -1;
 }
 } // namespace leetcode704
 
@@ -115,25 +114,25 @@ TEST(array, leetcode27) {
   uint32_t left = 0;
   uint32_t right = nums.size() - 1;
   int target = 2;
-  // 双指针解法， 比carl更优？ 减少了很多拷贝? nums[slow++] = nums[fast]; 
+  // 双指针解法， 比carl更优？ 减少了很多拷贝? nums[slow++] = nums[fast];
   for (int i = 0; i < right;) {
     if (nums[i] != target) {
 
       i++;
       left++;
     } else {
-        swap(nums[i], nums[right]);
-        right--;
+      swap(nums[i], nums[right]);
+      right--;
     }
   }
 
-//   uint32_t slow = 0;
-//   for (uint32_t fast = 0; fast < nums.size(); fast++) {
-//     if (nums[fast] != target) {
-//         nums[slow++] = nums[fast];
-//     }
-//   }
-  
+  //   uint32_t slow = 0;
+  //   for (uint32_t fast = 0; fast < nums.size(); fast++) {
+  //     if (nums[fast] != target) {
+  //         nums[slow++] = nums[fast];
+  //     }
+  //   }
+
   for (int i = 0; i < nums.size(); i++) {
     cout << nums[i] << endl;
   }
@@ -158,60 +157,61 @@ TEST(array, leetcode209) {
   for (int i = 0, j = 0; j < nums.size(); j++) {
     sum += nums[j];
     while (sum >= target) { // 这里需要一直变换i的位置 而不是只变换一次
-        min = std::min(min, j - i + 1);
-        sum -= nums[i];
-        i++;
+      min = std::min(min, j - i + 1);
+      sum -= nums[i];
+      i++;
     }
   }
   cout << min << endl;
 }
 
 /*
-给你一个正整数 n ，生成一个包含 1 到 n平方 所有元素，且元素按顺时针顺序螺旋排列的 n
-x n 正方形矩阵 matrix 。
+给你一个正整数 n ，生成一个包含 1 到 n平方
+所有元素，且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵 matrix 。
 */
 TEST(array, leetcode59) {
-    int n = 3;
-    vector<vector<int>> result(n, vector<int>(n, 0));
+  int n = 10;
+  vector<vector<int>> result(n, vector<int>(n, 0));
 
-    int loop = n / 2;
+  int loop = n / 2;
 
-    int xoff = 0;
-    int yoff = 0;
-    int off = 1;
-    int count = 1;
-    while (loop--) {
-        int i = xoff;
-        int j = yoff;
-        for (; i < xoff + n - off; i++) {
-            result[i][j] = count++;
-        }
+  int xoff = 0;
+  int yoff = 0;
+  int off = 1;
+  int count = 1;
+  while (loop--) { // 只需要循环一半就行
+    int i = xoff;
+    int j = yoff;
 
-        for (; j < yoff + n - off; j++) {
-          result[i][j] = count++;
-        }
-
-        for (; i >= xoff; i--) {
-          result[i][j] = count++;
-        }
-
-        for (; j >= yoff; j--) {
-          result[i][j] = count++;
-        }
-
-        xoff++;
-        yoff++;
-        off += 2;
-    } 
-
-    if (n % 2) {
-        result[n / 2] [n / 2] = count;
+    for (; j < yoff + n - off; j++) {
+      result[i][j] = count++;
     }
 
-    for (int i = 0; i < result[0].size(); i++) {
-        for (int j = 0; j < result[i].size(); j++) {
-            cout << result[i][j] << " ";
-        }
-        cout << endl;
+    for (; i < xoff + n - off; i++) {
+      result[i][j] = count++;
     }
+
+    for (; j > yoff; j--) {
+      result[i][j] = count++;
+    }
+
+    for (; i > xoff; i--) {
+      result[i][j] = count++;
+    }
+
+    xoff++;
+    yoff++;
+    off += 2;
+  }
+
+  if (n % 2) {
+    result[n / 2][n / 2] = count;
+  }
+
+  for (int i = 0; i < result[0].size(); i++) {
+    for (int j = 0; j < result[i].size(); j++) {
+      cout << result[i][j] << " ";
+    }
+    cout << endl;
+  }
 }
