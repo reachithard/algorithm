@@ -70,13 +70,13 @@ TEST(array, leetcode704) {
   using namespace std;
   using namespace leetcode704;
   vector<int> nums;
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 100; i++) {
     nums.push_back(i);
   }
 
   std::sort(nums.begin(), nums.end());
 
-  int target = 501;
+  int target = 51;
   for (uint32_t i = 0; i < nums.size(); i++) {
     cout << nums[i] << endl;
   }
