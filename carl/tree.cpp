@@ -131,7 +131,7 @@ struct TreeNode {
   }
 
   void PostOrder(TreeNode *root) {
-    // 左根右
+    // 左右根
     if (root == nullptr) {
       return;
     }
@@ -194,4 +194,18 @@ TEST(tree, leetcode145) {
   root->Print();
 
   root->PostOrder();
+}
+
+/*
+给你一棵二叉树的根节点 root ，返回其节点值的 层序遍历 。
+*/
+TEST(tree, leetcode102) {
+  TreeNode *root = new TreeNode(-1);
+  vector<int> nums{2, -3, 1, 3, 8, 5, 9};
+  for (int i = 0; i < nums.size(); i++) {
+    TreeNode *node = new TreeNode(nums[i]);
+    root->Push(node);
+  }
+
+  root->Print();
 }
