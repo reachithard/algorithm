@@ -26,13 +26,13 @@ struct TreeNode {
 
     TreeNode *node = cur;
     if (val < cur->val) {
-        if (cur->left) {
-          node = Find(cur->left, val);
-        }
+      if (cur->left) {
+        node = Find(cur->left, val);
+      }
     } else {
-        if (cur->right) {
-          node = Find(cur->right, val);
-        }
+      if (cur->right) {
+        node = Find(cur->right, val);
+      }
     }
     if (node && (node->left == nullptr || node->right == nullptr)) {
       return node;
@@ -90,16 +90,16 @@ struct TreeNode {
   void PreOrder(TreeNode *root) {
     // 根左右
     if (root == nullptr) {
-        return;
+      return;
     }
 
     cout << root->val << " ";
     if (root->left) {
-        PreOrder(root->left);
+      PreOrder(root->left);
     }
 
     if (root->right) {
-        PreOrder(root->right);
+      PreOrder(root->right);
     }
   }
 
@@ -145,6 +145,24 @@ struct TreeNode {
     }
 
     cout << root->val << " ";
+  }
+
+  void Reverse() { Reverse(this); }
+
+  void Reverse(TreeNode *root) {
+    if (root == nullptr) {
+      return;
+    }
+
+    if (root->left) {
+      Reverse(root->left);
+    }
+
+    if (root->right) {
+      Reverse(root->right);
+    }
+
+    swap(root->left, root->right);
   }
 };
 
@@ -206,6 +224,24 @@ TEST(tree, leetcode102) {
     TreeNode *node = new TreeNode(nums[i]);
     root->Push(node);
   }
+
+  root->Print();
+}
+
+/*
+给你一棵二叉树的根节点 root ，翻转这棵二叉树，并返回其根节点。
+*/
+TEST(tree, leetcode226) {
+  TreeNode *root = new TreeNode(-1);
+  vector<int> nums{2, -3, 1, 3, 8, 5, 9};
+  for (int i = 0; i < nums.size(); i++) {
+    TreeNode *node = new TreeNode(nums[i]);
+    root->Push(node);
+  }
+
+  root->Print();
+
+  root->Reverse();
 
   root->Print();
 }
