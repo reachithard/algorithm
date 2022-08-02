@@ -164,6 +164,30 @@ struct TreeNode {
 
     swap(root->left, root->right);
   }
+
+  bool Symmetric() { return Symmetric(this); }
+
+  bool Symmetric(TreeNode *root) {
+    if ((root->left == nullptr && root->right == nullptr) ||
+        (root->left->val == root->right->val)) {
+      return true;
+    } else {
+      return false;
+    }
+
+    bool left = false;
+    bool right = false;
+
+    if (root->left) {
+      left = Symmetric(root->left);
+    }
+
+    if (root->right) {
+      right = Symmetric(root->right);
+    }
+
+    return left && right;
+  }
 };
 
 /*
@@ -244,4 +268,20 @@ TEST(tree, leetcode226) {
   root->Reverse();
 
   root->Print();
+}
+
+/*
+给你一个二叉树的根节点 root ， 检查它是否轴对称。
+*/
+TEST(tree, leetcode101) {
+  TreeNode *root = new TreeNode(-1);
+  vector<int> nums{2, -3, 1, 3, 8, 5, 9};
+  for (int i = 0; i < nums.size(); i++) {
+    TreeNode *node = new TreeNode(nums[i]);
+    root->Push(node);
+  }
+  ASSERT_FALSE(root->Symmetric());
+
+  TreeNode *tt = new TreeNode(-1);
+  ASSERT_TRUE(tt->Symmetric());
 }
