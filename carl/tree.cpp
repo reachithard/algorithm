@@ -321,6 +321,44 @@ struct TreeNode {
 
     return left || right;
   }
+
+  void AllTargetPath(int target, vector<vector<int>> &paths) {
+    vector<int> path;
+    AllTargetPath(this, path, target, paths);
+  }
+
+  void AllTargetPath(TreeNode *root, vector<int> &path, int target,
+                     vector<vector<int>> &paths) {
+    if (root == nullptr) {
+      return;
+    }
+
+    path.push_back(root->val);
+
+    if (root->left == nullptr && root->right == nullptr) {
+      int sum = 0;
+      for (int i = 0; i < path.size(); i++) {
+        // cout << path[i] << ",";
+        sum += path[i];
+      }
+      // cout << "root->val" << root->val;
+      cout << endl;
+
+      if (target == sum) {
+        paths.push_back(path);
+      }
+    }
+
+    if (root->left) {
+      AllTargetPath(root->left, path, target, paths);
+      path.pop_back();
+    }
+
+    if (root->right) {
+      AllTargetPath(root->right, path, target, paths);
+      path.pop_back();
+    }
+  }
 };
 
 /*
@@ -619,4 +657,23 @@ TEST(tree, leetcode112) {
   root->LayerdPush(arr);
   root->Print();
   ASSERT_TRUE(root->TargetPath(22));
+}
+
+/*
+ */
+TEST(tree, leetcode113) {
+  TreeNode *root = new TreeNode(5);
+  vector<int> arr = {4, 8, 11, -1, 13, 4, 7, 2, -1, -1, -1, -1, 5, 1};
+  root->LayerdPush(arr);
+  root->Print();
+  vector<vector<int>> paths;
+  int target = 22;
+  root->AllTargetPath(target, paths);
+  for (int i = 0; i < paths.size(); i++) {
+    cout << "[";
+    for (int j = 0; j < paths[i].size(); j++) {
+      cout << paths[i][j] << ",";
+    }
+    cout << "]" << endl;
+  }
 }
