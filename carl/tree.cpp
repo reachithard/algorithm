@@ -379,8 +379,6 @@ public:
     }
     *root = new TreeNode(postorder[index--]); // 后序遍历最后一个是根节点
 
-
-
     cout << "begin";
     for (int t = 0; t < inorder.size(); t++) {
       cout << inorder[t] << " ";
@@ -404,8 +402,59 @@ public:
       inorder.erase(inorder.begin() + idx - 1);
     }
 
-
     InorderAndPostorder(&((*root)->right), inorder, postorder, index);
+  }
+
+  void InorderAndPreorder(vector<int> &inorder, vector<int> &preorder) {
+    dummy = InorderAndPreorder(dummy, inorder, 0, inorder.size(), preorder, 0,
+                               preorder.size());
+  }
+
+  // 根左右 和 左根右
+  /*
+  vector<int> preorder{3, 9, 20, 15, 7};
+  vector<int> inorder{9, 3, 15, 20, 7};
+  */
+  TreeNode *InorderAndPreorder(TreeNode *root, vector<int> &inorder,
+                               int inorderBegin, int inorderEnd,
+                               vector<int> &preorder, int preorderBegin,
+                               int preorderEnd) {
+    if (preorderBegin == preorderEnd) {
+      return nullptr;
+    }
+    root = new TreeNode(preorder[preorderBegin]);
+
+    if (preorderEnd - preorderBegin == 1) {
+      return root;
+    }
+
+    int idx = inorderBegin;
+    for (; idx < inorder.size(); idx++) {
+      if (preorder[preorderBegin] == inorder[idx]) {
+        break;
+      }
+    }
+
+    int leftInorderBegin = inorderBegin;
+    int leftInorderEnd = idx;
+
+    int rightInorderBegin = idx + 1;
+    int rightInorderEnd = inorderEnd;
+
+    int leftPreorderBegin = preorderBegin + 1;
+    int leftPreorderEnd = preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
+
+    int rightPreorderBegin =
+        preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
+    int rightPreorderEnd = preorderEnd;
+
+    root->left = InorderAndPreorder(root->left, inorder, leftInorderBegin,
+                                    leftInorderEnd, preorder, leftPreorderBegin,
+                                    leftPreorderEnd);
+    root->right = InorderAndPreorder(root->right, inorder, rightInorderBegin,
+                                     rightInorderEnd, preorder,
+                                     rightPreorderBegin, rightPreorderEnd);
+    return root;
   }
 
   void Print() {
@@ -788,4 +837,45 @@ TEST(tree, leetcode106) {
   Tree *tree2 = new Tree();
   tree2->InorderAndPostorder(inorder2, postorder2);
   tree2->Print();
+}
+
+/*
+给定两个整数数组 preorder 和 inorder ，其中 preorder 是二叉树的先序遍历，
+inorder 是同一棵树的中序遍历，请构造二叉树并返回其根节点。
+
+ 
+
+示例 1:
+
+
+输入: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+输出: [3,9,20,null,null,15,7]
+示例 2:
+
+输入: preorder = [-1], inorder = [-1]
+输出: [-1]
+ 
+
+提示:
+
+1 <= preorder.length <= 3000
+inorder.length == preorder.length
+-3000 <= preorder[i], inorder[i] <= 3000
+preorder 和 inorder 均 无重复 元素
+inorder 均出现在 preorder
+preorder 保证 为二叉树的前序遍历序列
+inorder 保证 为二叉树的中序遍历序列
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode105) {
+  // TODO 
+  vector<int> preorder{3, 9, 20, 15, 7};
+  vector<int> inorder{9, 3, 15, 20, 7};
+
+  Tree *tree = new Tree();
+  tree->InorderAndPreorder(inorder, preorder);
+  tree->Print();
 }
