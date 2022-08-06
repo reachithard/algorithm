@@ -361,6 +361,63 @@ struct TreeNode {
   }
 };
 
+class Tree {
+public:
+  Tree() {}
+
+  Tree(int val) { dummy = new TreeNode(val); }
+
+  void InorderAndPostorder(vector<int> &inorder, vector<int> &postorder) {
+    int index = postorder.size() - 1;
+    return InorderAndPostorder(&dummy, inorder, postorder, index);
+  }
+  void InorderAndPostorder(TreeNode **root, vector<int> &inorder,
+                           vector<int> &postorder, int &index) {
+    cout << "index" << index << endl;
+    if (index < 0 || inorder.empty()) {
+      return;
+    }
+    *root = new TreeNode(postorder[index--]); // 后序遍历最后一个是根节点
+
+
+
+    cout << "begin";
+    for (int t = 0; t < inorder.size(); t++) {
+      cout << inorder[t] << " ";
+    }
+    cout << endl;
+
+    // 然后从中序遍历找左节点
+    int idx = 0;
+    for (; idx < inorder.size(); idx++) {
+      if (inorder[idx] == postorder[index + 1]) {
+        // 说明找到
+        break;
+      }
+    }
+
+    cout << "idx:" << idx << "ret:" << postorder[index + 1] << endl;
+    inorder.erase(inorder.begin() + idx);
+    if (idx >= 1 && idx != inorder.size()) {
+      TreeNode *tmp = new TreeNode(inorder[idx - 1]);
+      (*root)->left = tmp;
+      inorder.erase(inorder.begin() + idx - 1);
+    }
+
+
+    InorderAndPostorder(&((*root)->right), inorder, postorder, index);
+  }
+
+  void Print() {
+    if (dummy) {
+      dummy->Print();
+    }
+  }
+
+private:
+  TreeNode *dummy;
+};
+
 /*
 给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
 */
@@ -660,6 +717,14 @@ TEST(tree, leetcode112) {
 }
 
 /*
+给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点
+路径总和等于给定目标和的路径。
+
+叶子节点 是指没有子节点的节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/path-sum-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
  */
 TEST(tree, leetcode113) {
   TreeNode *root = new TreeNode(5);
@@ -676,4 +741,51 @@ TEST(tree, leetcode113) {
     }
     cout << "]" << endl;
   }
+}
+
+/*
+给定两个整数数组 inorder 和 postorder ，其中 inorder 是二叉树的中序遍历，
+postorder 是同一棵树的后序遍历，请你构造并返回这颗 二叉树 。
+
+ 
+
+示例 1:
+
+输入：inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+输出：[3,9,20,null,null,15,7]
+示例 2:
+
+输入：inorder = [-1], postorder = [-1]
+输出：[-1]
+ 
+
+提示:
+
+1 <= inorder.length <= 3000
+postorder.length == inorder.length
+-3000 <= inorder[i], postorder[i] <= 3000
+inorder 和 postorder 都由 不同 的值组成
+postorder 中每一个值都在 inorder 中
+inorder 保证是树的中序遍历
+postorder 保证是树的后序遍历
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode106) {
+  // 中序遍历是左根右 后序遍历是左右根 后序遍历的最后一个节点是根结点
+  vector<int> inorder = {9, 3, 15, 20, 7};
+  vector<int> postorder = {9, 15, 7, 20, 3};
+
+  Tree *tree = new Tree();
+  tree->InorderAndPostorder(inorder, postorder);
+  tree->Print();
+
+  vector<int> inorder2 = {5, 4, 1, 2, 6};
+  vector<int> postorder2 = {1, 2, 4, 6, 5};
+
+  Tree *tree2 = new Tree();
+  tree2->InorderAndPostorder(inorder2, postorder2);
+  tree2->Print();
 }
