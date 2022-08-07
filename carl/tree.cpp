@@ -368,9 +368,73 @@ public:
   Tree(int val) { dummy = new TreeNode(val); }
 
   void InorderAndPostorder(vector<int> &inorder, vector<int> &postorder) {
-    int index = postorder.size() - 1;
-    return InorderAndPostorder(&dummy, inorder, postorder, index);
+    dummy = InorderAndPostorder(dummy, inorder, 0, inorder.size(), postorder, 0,
+                        postorder.size());
   }
+
+  int times = 0;
+  // 中序遍历是左根右 后序遍历是左右根 后序遍历的最后一个节点是根结点
+  // vector<int> inorder = {9, 3, 15, 20, 7};
+  // vector<int> postorder = {9, 15, 7, 20, 3};
+  TreeNode *InorderAndPostorder(TreeNode *root, vector<int> &inorder,
+                                int inorderBegin, int inorderEnd,
+                                vector<int> &postorder, int postorderBegin,
+                                int postorderEnd) {
+    if (postorderBegin == postorderEnd) {
+      return nullptr;
+    }
+    root = new TreeNode(postorder[postorderEnd - 1]);
+    // cout << "inodebegin:" << inorderBegin << " inorderEnd:" << inorderEnd <<
+    // " postbegin:" << postorderBegin << " postEnd:" << postorderEnd << endl;
+    if (postorderEnd - postorderBegin == 1) {
+      return root;
+    }
+
+    int idx = inorderBegin;
+    for (; idx < inorderEnd; idx++) {
+      if (inorder[idx] == postorder[postorderEnd - 1]) {
+        break;
+      }
+    }
+
+    // idx找到
+    int leftInorderBegin = inorderBegin;
+    int leftInorderEnd = idx;
+
+    int rightInorderBegin = idx + 1;
+    int rightInorderEnd = inorderEnd - 1;
+
+    int leftPostorderBegin = postorderBegin;
+    int leftPostorderEnd = postorderBegin + leftInorderEnd - leftInorderBegin;
+
+    int rightPostorderBegin =
+        postorderBegin + leftInorderEnd - leftInorderBegin;
+    int rightPostorderEnd = postorderEnd - 1;
+
+    // cout << "leftInorderBegin:" << leftInorderBegin
+    //      << " leftInorderEnd:" << leftInorderEnd
+    //      << " rightInorderBegin:" << rightInorderBegin
+    //      << " rightInorderEnd:" << rightInorderEnd
+    //      << " leftPostorderBegin:" << leftPostorderBegin
+    //      << " leftPostorderEnd:" << leftPostorderEnd
+    //      << " rightPostorderBegin:" << rightPostorderBegin
+    //      << " rightPostorderEnd:" << rightPostorderEnd << endl;
+
+        //  times++;
+        //  if (times > 20) {
+        //   return nullptr;
+        //  }
+
+    root->left = InorderAndPostorder(root->left, inorder, leftInorderBegin,
+                                     leftInorderEnd, postorder,
+                                     leftPostorderBegin, leftPostorderEnd);
+    root->right = InorderAndPostorder(root->right, inorder, rightInorderBegin,
+                                      rightInorderEnd, postorder,
+                                      rightPostorderBegin, rightPostorderEnd);
+
+    return root;
+  }
+
   void InorderAndPostorder(TreeNode **root, vector<int> &inorder,
                            vector<int> &postorder, int &index) {
     cout << "index" << index << endl;
@@ -442,7 +506,8 @@ public:
     int rightInorderEnd = inorderEnd;
 
     int leftPreorderBegin = preorderBegin + 1;
-    int leftPreorderEnd = preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
+    int leftPreorderEnd =
+        preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
 
     int rightPreorderBegin =
         preorderBegin + (leftInorderEnd - leftInorderBegin) + 1;
@@ -463,9 +528,62 @@ public:
     }
   }
 
-private:
-  TreeNode *dummy;
-};
+  void MergeTwoTree(TreeNode *tree1, TreeNode *tree2) {
+    dummy = MergeTwoTree(dummy, tree1, tree2);
+  }
+
+  TreeNode* MergeTwoTree(TreeNode *root, TreeNode *tree1, TreeNode *tree2) {
+    if (tree1 == nullptr && tree2 == nullptr) {
+      return nullptr;
+    } else if (tree1 != nullptr && tree2 != nullptr) {
+      root = new TreeNode(tree1->val + tree2->val);
+      root->left = MergeTwoTree(root->left, tree1->left, tree2->left);
+      root->right = MergeTwoTree(root->right, tree1->right, tree2->right);
+    } else if (tree1) {
+      root = new TreeNode(tree1->val);
+      root->left = MergeTwoTree(root->left, tree1->left, nullptr);
+      root->right = MergeTwoTree(root->right, tree1->right, nullptr);
+    } else if (tree2) {
+      root = new TreeNode(tree2->val);
+      root->left = MergeTwoTree(root->left, nullptr, tree2->left);
+      root->right = MergeTwoTree(root->right, nullptr, tree2->right);
+    }
+
+
+    return root;
+  }
+
+  TreeNode *GetDummy() {
+    return dummy;
+  }
+
+  TreeNode *FindBstNode(int target) {
+    return FindBstNode(dummy, target);
+  }
+
+  TreeNode *FindBstNode(TreeNode * root, int target) {
+      if (root == nullptr) {
+        return nullptr;
+      }
+
+      if (root->val == target) {
+        return root;
+      } else if (root->val > target) {
+        return FindBstNode(root->left, target);
+      } else {
+        return FindBstNode(root->right, target);
+      }
+    }
+
+    void LayerdPush(const vector<int> &tmp) {
+      dummy = new TreeNode(tmp.front());
+      vector<int> tt(tmp.begin() + 1, tmp.end());
+      dummy->LayerdPush(tt);
+    }
+
+   private:
+    TreeNode *dummy;
+  };
 
 /*
 给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
@@ -871,11 +989,99 @@ inorder 保证 为二叉树的中序遍历序列
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 TEST(tree, leetcode105) {
-  // TODO 
+  // TODO
   vector<int> preorder{3, 9, 20, 15, 7};
   vector<int> inorder{9, 3, 15, 20, 7};
 
   Tree *tree = new Tree();
   tree->InorderAndPreorder(inorder, preorder);
   tree->Print();
+}
+
+/*
+给你两棵二叉树： root1 和 root2 。
+
+想象一下，当你将其中一棵覆盖到另一棵之上时，两棵树上的一些节点将会重叠（而另一些不会）。你需要将这两棵树合并成一棵新二叉树。合并的规则是：如果两个节点重叠，那么将这两个节点的值相加作为合并后节点的新值；否则，不为
+null 的节点将直接作为新二叉树的节点。
+
+返回合并后的二叉树。
+
+注意: 合并过程必须从两个树的根节点开始。
+
+ 
+
+示例 1：
+
+
+输入：root1 = [1,3,2,5], root2 = [2,1,3,null,4,null,7]
+输出：[3,4,5,5,4,null,7]
+示例 2：
+
+输入：root1 = [1], root2 = [1,2]
+输出：[2,2]
+ 
+
+提示：
+
+两棵树中的节点数目在范围 [0, 2000] 内
+-104 <= Node.val <= 104
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/merge-two-binary-trees
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode617) {
+  vector<int> inorder = {9, 3, 15, 20, 7};
+  vector<int> postorder = {9, 15, 7, 20, 3};
+
+  Tree *tree = new Tree();
+  tree->InorderAndPostorder(inorder, postorder);
+  tree->Print();
+
+  vector<int> inorder2 = {5, 4, 1, 2, 6};
+  vector<int> postorder2 = {1, 2, 4, 6, 5};
+
+  Tree *tree2 = new Tree();
+  tree2->InorderAndPostorder(inorder2, postorder2);
+  tree2->Print();
+
+  cout << "other" << endl;
+
+  Tree *merge = new Tree();
+  merge->MergeTwoTree(tree->GetDummy(), tree2->GetDummy());
+  merge->Print();
+}
+
+/*
+给定二叉搜索树（BST）的根节点 root 和一个整数值 val。
+
+你需要在 BST 中找到节点值等于 val 的节点。 返回以该节点为根的子树。
+如果节点不存在，则返回 null 。
+
+ 
+
+示例 1:
+
+
+
+输入：root = [4,2,7,1,3], val = 2
+输出：[2,1,3]
+示例 2:
+
+
+输入：root = [4,2,7,1,3], val = 5
+输出：[]
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/search-in-a-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode700) {
+  Tree *root = new Tree();
+  vector<int> arr = {4, 2, 7, 1, 3};
+  root->LayerdPush(arr);
+  root->Print();
+
+  TreeNode *find = root->FindBstNode(2);
+  find->Print();
 }
