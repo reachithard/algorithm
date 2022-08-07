@@ -369,7 +369,7 @@ public:
 
   void InorderAndPostorder(vector<int> &inorder, vector<int> &postorder) {
     dummy = InorderAndPostorder(dummy, inorder, 0, inorder.size(), postorder, 0,
-                        postorder.size());
+                                postorder.size());
   }
 
   int times = 0;
@@ -420,10 +420,10 @@ public:
     //      << " rightPostorderBegin:" << rightPostorderBegin
     //      << " rightPostorderEnd:" << rightPostorderEnd << endl;
 
-        //  times++;
-        //  if (times > 20) {
-        //   return nullptr;
-        //  }
+    //  times++;
+    //  if (times > 20) {
+    //   return nullptr;
+    //  }
 
     root->left = InorderAndPostorder(root->left, inorder, leftInorderBegin,
                                      leftInorderEnd, postorder,
@@ -532,7 +532,7 @@ public:
     dummy = MergeTwoTree(dummy, tree1, tree2);
   }
 
-  TreeNode* MergeTwoTree(TreeNode *root, TreeNode *tree1, TreeNode *tree2) {
+  TreeNode *MergeTwoTree(TreeNode *root, TreeNode *tree1, TreeNode *tree2) {
     if (tree1 == nullptr && tree2 == nullptr) {
       return nullptr;
     } else if (tree1 != nullptr && tree2 != nullptr) {
@@ -549,41 +549,114 @@ public:
       root->right = MergeTwoTree(root->right, nullptr, tree2->right);
     }
 
-
     return root;
   }
 
-  TreeNode *GetDummy() {
-    return dummy;
-  }
+  TreeNode *GetDummy() { return dummy; }
 
-  TreeNode *FindBstNode(int target) {
-    return FindBstNode(dummy, target);
-  }
+  TreeNode *FindBstNode(int target) { return FindBstNode(dummy, target); }
 
-  TreeNode *FindBstNode(TreeNode * root, int target) {
-      if (root == nullptr) {
-        return nullptr;
-      }
-
-      if (root->val == target) {
-        return root;
-      } else if (root->val > target) {
-        return FindBstNode(root->left, target);
-      } else {
-        return FindBstNode(root->right, target);
-      }
+  TreeNode *FindBstNode(TreeNode *root, int target) {
+    if (root == nullptr) {
+      return nullptr;
     }
 
-    void LayerdPush(const vector<int> &tmp) {
-      dummy = new TreeNode(tmp.front());
-      vector<int> tt(tmp.begin() + 1, tmp.end());
-      dummy->LayerdPush(tt);
+    if (root->val == target) {
+      return root;
+    } else if (root->val > target) {
+      return FindBstNode(root->left, target);
+    } else {
+      return FindBstNode(root->right, target);
+    }
+  }
+
+  void LayerdPush(const vector<int> &tmp) {
+    dummy = new TreeNode(tmp.front());
+    vector<int> tt(tmp.begin() + 1, tmp.end());
+    dummy->LayerdPush(tt);
+  }
+
+  bool IsBstTree() {
+    TreeNode *prev = nullptr;
+    return IsBstTree(dummy, &prev);
+  }
+
+  bool IsBstTree(TreeNode *root, TreeNode **prev) {
+    if (root == nullptr) {
+      return true;
     }
 
-   private:
-    TreeNode *dummy;
-  };
+    bool left = IsBstTree(root->left, prev);
+    if (*prev != nullptr && (*prev)->val >= root->val) {
+      return false;
+    } 
+    *prev = root;
+    bool right = IsBstTree(root->right, prev);
+    return left && right;
+  }
+
+  int MinAbsBstTree() {
+    int min = INT32_MAX;
+    TreeNode *prev = nullptr;
+    MinAbsBstTree(dummy, &prev, min);
+    return min;
+  }
+
+  void MinAbsBstTree(TreeNode *root, TreeNode **prev, int &min) {
+    if (root == nullptr) {
+      return;
+    }
+
+    MinAbsBstTree(root->left, prev, min);
+    if (*prev != nullptr) {
+      min = std::min(abs((*prev)->val - root->val), min);
+    }
+    *prev = root;
+    MinAbsBstTree(root->right, prev, min);
+  }
+
+  vector<int> GetBstTreeCommanNum() {
+    int cnt = 0;
+    vector<int> common;
+    TreeNode *prev = nullptr;
+    int maxCnt = 0;
+
+    GetBstTreeCommanNum(dummy, &prev, common, cnt, maxCnt);
+    return common;
+  }
+
+      void
+      GetBstTreeCommanNum(TreeNode *root, TreeNode **prev, vector<int> &common,
+                          int &cnt, int &maxCnt) {
+    if (root == nullptr) {
+      return;
+    }
+
+    GetBstTreeCommanNum(root->left, prev, common, cnt, maxCnt);
+    if (*prev == nullptr) {
+      cnt = 1;
+    } else if ((*prev)->val == root->val) {
+      cnt++;
+    } else {
+      cnt = 1;
+    }
+
+    *prev = root;
+
+    if (cnt == maxCnt) {
+      common.push_back(root->val);
+    } else if (cnt > maxCnt) {
+      common.clear();
+      maxCnt = cnt;
+      common.push_back(root->val);
+    }
+
+    GetBstTreeCommanNum(root->right, prev, common, cnt, maxCnt);
+  }
+
+ private:
+  TreeNode *dummy;
+};
 
 /*
 给你二叉树的根节点 root ，返回它节点值的 前序 遍历。
@@ -1084,4 +1157,112 @@ TEST(tree, leetcode700) {
 
   TreeNode *find = root->FindBstNode(2);
   find->Print();
+}
+
+/*
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+
+有效 二叉搜索树定义如下：
+
+节点的左子树只包含 小于 当前节点的数。
+节点的右子树只包含 大于 当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+ 
+
+示例 1：
+
+
+输入：root = [2,1,3]
+输出：true
+示例 2：
+
+
+输入：root = [5,1,4,null,null,3,6]
+输出：false
+解释：根节点的值是 5 ，但是右子节点的值是 4 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/validate-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode98) {
+  Tree *root = new Tree();
+  vector<int> arr = {2, 1, 3};
+  root->LayerdPush(arr);
+  root->Print();
+  ASSERT_TRUE(root->IsBstTree());
+
+  Tree *root2 = new Tree();
+  vector<int> arr2 = {5, 1, 4, -1, -1, 3, 6};
+  root2->LayerdPush(arr2);
+  root2->Print();
+  ASSERT_FALSE(root2->IsBstTree());
+}
+
+/*
+给你一个二叉搜索树的根节点 root ，返回 树中任意两不同节点值之间的最小差值 。
+
+差值是一个正数，其数值等于两值之差的绝对值。
+
+ 
+
+示例 1：
+
+
+输入：root = [4,2,6,1,3]
+输出：1
+示例 2：
+
+
+输入：root = [1,0,48,null,null,12,49]
+输出：1
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/minimum-absolute-difference-in-bst
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode530) {
+  Tree *root = new Tree();
+  vector<int> arr = {4, 2, 6, 1, 3};
+  root->LayerdPush(arr);
+  root->Print();
+  cout << root->MinAbsBstTree() << endl;
+}
+
+/*
+给你一个含重复值的二叉搜索树（BST）的根节点 root ，找出并返回 BST 中的所有
+众数（即，出现频率最高的元素）。
+
+如果树中有不止一个众数，可以按 任意顺序 返回。
+
+假定 BST 满足如下定义：
+
+结点左子树中所含节点的值 小于等于 当前节点的值
+结点右子树中所含节点的值 大于等于 当前节点的值
+左子树和右子树都是二叉搜索树
+ 
+
+示例 1：
+
+
+输入：root = [1,null,2,2]
+输出：[2]
+示例 2：
+
+输入：root = [0]
+输出：[0]
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/find-mode-in-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode501) {
+  Tree *root = new Tree();
+  vector<int> arr = {1, -1, 2, -1, -1, 2, 2};
+  root->LayerdPush(arr);
+  root->Print();
+  vector<int> common = root->GetBstTreeCommanNum();
+  for (int i = 0; i < common.size(); i++) {
+    cout << common[i] << endl;
+  }
 }
