@@ -726,6 +726,90 @@ public:
     }
   }
 
+  void InsertBstTreeVal(int val) { InsertBstTreeVal(dummy, val); }
+  void InsertBstTreeVal(TreeNode *root, int val) {
+    if (root == nullptr) {
+      return;
+    }
+
+    if (root->val > val) {
+      if (root->left) {
+        InsertBstTreeVal(root->left, val);
+      } else {
+        TreeNode *tmp = new TreeNode(val);
+        root->left = tmp;
+      }
+    } else {
+      if (root->right) {
+        InsertBstTreeVal(root->right, val);
+      } else {
+        TreeNode *tmp = new TreeNode(val);
+        root->right = tmp;
+      }
+    }
+  }
+
+  TreeNode *FindTobeDelete(TreeNode *root, int val) {
+    if (root == nullptr) {
+      return nullptr;
+    }
+
+    TreeNode *tmp = nullptr;
+    if (root->val > val && root->left) {
+      tmp = FindTobeDelete(root->left, val);
+    } else if (root->val < val && root->right) {
+      tmp = FindTobeDelete(root->right, val);
+    } else {
+      tmp = root;
+    }
+    return tmp;
+  }
+
+  TreeNode *FindLeft(TreeNode *root) {
+    if (root == nullptr) {
+      return root;
+    }
+
+    TreeNode *tmp = nullptr;
+    if (root->left) {
+      tmp = FindLeft(root->left);
+    } else {
+      tmp = root;
+    }
+    return tmp;
+  }
+
+  TreeNode *FindRight(TreeNode *root) {
+    if (root == nullptr) {
+      return root;
+    }
+
+    TreeNode *tmp = nullptr;
+    if (root->right) {
+      tmp = FindRight(root->right);
+    } else {
+      tmp = root;
+    }
+    return tmp;
+  }
+
+  void DeleteBstTree(int val) {
+    TreeNode *node = FindTobeDelete(dummy, val);
+    TreeNode *tmp = nullptr;
+    if (node->right) {
+      // 找右子树最左
+      tmp = FindLeft(node->right);
+    } else if (node->left) {
+      // 找左子树最右
+      tmp = FindRight(node->left);
+    } else {
+      // 左右都没有 直接删
+      tmp = node;
+    }
+    node->val = tmp->val;
+    tmp->val = -1;
+  }
+
 private:
   TreeNode *dummy;
 };
@@ -1418,4 +1502,110 @@ p、q 为不同节点且均存在于给定的二叉搜索树中。
 */
 TEST(tree, leetcode235) {
   // TODO 未测试 即处于[p, q]时则为待寻找
+}
+
+/*
+给定二叉搜索树（BST）的根节点 root 和要插入树中的值 value ，将值插入二叉搜索树。
+返回插入后二叉搜索树的根节点。 输入数据 保证
+，新值和原始二叉搜索树中的任意节点值都不同。
+
+注意，可能存在多种有效的插入方式，只要树在插入后仍保持为二叉搜索树即可。
+你可以返回 任意有效的结果 。
+
+ 
+
+示例 1：
+
+
+输入：root = [4,2,7,1,3], val = 5
+输出：[4,2,7,1,3,5]
+解释：另一个满足题目要求可以通过的树是：
+
+示例 2：
+
+输入：root = [40,20,60,10,30,50,70], val = 25
+输出：[40,20,60,10,30,50,70,null,null,25]
+示例 3：
+
+输入：root = [4,2,7,1,3,null,null,null,null,null,null], val = 5
+输出：[4,2,7,1,3,5]
+ 
+
+提示：
+
+树中的节点数将在 [0, 104]的范围内。
+-108 <= Node.val <= 108
+所有值 Node.val 是 独一无二 的。
+-108 <= val <= 108
+保证 val 在原始BST中不存在。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/insert-into-a-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode701) {
+  Tree *root = new Tree();
+  vector<int> arr = {4, 2, 7, 1, 3};
+  root->LayerdPush(arr);
+  root->Print();
+  root->InsertBstTreeVal(5);
+
+  cout << "insert" << endl;
+  root->Print();
+
+  Tree *root2 = new Tree();
+  vector<int> arr2 = {40, 20, 60, 10, 30, 50, 70};
+  root2->LayerdPush(arr2);
+  root2->Print();
+  root2->InsertBstTreeVal(25);
+
+  cout << "insert" << endl;
+  root2->Print();
+}
+
+/*
+给定一个二叉搜索树的根节点 root 和一个值
+key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。返回二叉搜索树（有可能被更新）的根节点的引用。
+
+一般来说，删除节点可分为两个步骤：
+
+首先找到需要删除的节点；
+如果找到了，删除它。
+ 
+
+示例 1:
+
+
+
+输入：root = [5,3,6,2,4,null,7], key = 3
+输出：[5,4,6,2,null,null,7]
+解释：给定需要删除的节点值是 3，所以我们首先找到 3 这个节点，然后删除它。
+一个正确的答案是 [5,4,6,2,null,null,7], 如下图所示。
+另一个正确答案是 [5,2,6,null,4,null,7]。
+
+
+示例 2:
+
+输入: root = [5,3,6,2,4,null,7], key = 0
+输出: [5,3,6,2,4,null,7]
+解释: 二叉树不包含值为 0 的节点
+示例 3:
+
+输入: root = [], key = 0
+输出: []
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/delete-node-in-a-bst
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode450) {
+  // TODO
+  Tree *root = new Tree();
+  vector<int> arr = {5, 3, 6, 2, 4, -1, 7};
+  root->LayerdPush(arr);
+  root->Print();
+  root->DeleteBstTree(3);
+
+  cout << "delete" << endl;
+  root->Print();
 }
