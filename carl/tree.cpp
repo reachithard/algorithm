@@ -589,7 +589,7 @@ public:
     bool left = IsBstTree(root->left, prev);
     if (*prev != nullptr && (*prev)->val >= root->val) {
       return false;
-    } 
+    }
     *prev = root;
     bool right = IsBstTree(root->right, prev);
     return left && right;
@@ -625,9 +625,8 @@ public:
     return common;
   }
 
-      void
-      GetBstTreeCommanNum(TreeNode *root, TreeNode **prev, vector<int> &common,
-                          int &cnt, int &maxCnt) {
+  void GetBstTreeCommanNum(TreeNode *root, TreeNode **prev, vector<int> &common,
+                           int &cnt, int &maxCnt) {
     if (root == nullptr) {
       return;
     }
@@ -654,7 +653,80 @@ public:
     GetBstTreeCommanNum(root->right, prev, common, cnt, maxCnt);
   }
 
- private:
+  TreeNode *GetCommanParent(TreeNode *p, TreeNode *q) {
+    vector<TreeNode *> pparent;
+    vector<TreeNode *> paths;
+
+    GetCommanParent(dummy, paths, pparent, &p);
+
+    vector<TreeNode *> qparent;
+
+    GetCommanParent(dummy, paths, qparent, &p);
+
+    reverse(pparent.begin(), pparent.end());
+    reverse(qparent.begin(), qparent.end());
+
+    // 然后找公共的
+    size_t offset = abs((int)pparent.size() - (int)qparent.size() - 1);
+    int i = 0;
+    TreeNode *parent = nullptr;
+    if (pparent.size() > qparent.size()) {
+      for (; i < qparent.size(); i++) {
+        if (pparent[i + offset] == qparent[i]) {
+          parent = qparent[i];
+          break;
+        }
+      }
+    } else {
+      for (; i < qparent.size(); i++) {
+        if (pparent[i] == qparent[i + offset]) {
+          parent = pparent[i];
+          break;
+        }
+      }
+    }
+    return parent;
+  }
+
+  void GetCommanParent(TreeNode *root, vector<TreeNode *> &paths,
+                       vector<TreeNode *> &parent, TreeNode **target) {
+    if (root == nullptr) {
+      return;
+    }
+
+    paths.push_back(root);
+    if (*target == root) {
+      parent = paths;
+    }
+
+    if (root->left) {
+      GetCommanParent(root->left, paths, parent, target);
+      paths.pop_back();
+    }
+
+    if (root->right) {
+      GetCommanParent(root->right, paths, parent, target);
+      paths.pop_back();
+    }
+  }
+
+  TreeNode *GetBstCommanNode(TreeNode *p, TreeNode *q) {
+    return GetBstCommanNode(dummy, p, q);
+  }
+  TreeNode *GetBstCommanNode(TreeNode *root, TreeNode *p, TreeNode *q) {
+    if (root == nullptr) {
+      return root;
+    }
+    if (root->val < p->val && root->val < q->val) {
+      return GetBstCommanNode(root->right, p, q);
+    } else if (root->val > p->val && root->val > q->val) {
+      return GetBstCommanNode(root->left, p, q);
+    } else {
+      return root;
+    }
+  }
+
+private:
   TreeNode *dummy;
 };
 
@@ -1265,4 +1337,85 @@ TEST(tree, leetcode501) {
   for (int i = 0; i < common.size(); i++) {
     cout << common[i] << endl;
   }
+}
+
+/*
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点
+p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x
+的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+ 
+
+示例 1：
+
+
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+示例 2：
+
+
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出：5
+解释：节点 5 和节点 4 的最近公共祖先是节点 5
+。因为根据定义最近公共祖先节点可以为节点本身。 示例 3：
+
+输入：root = [1,2], p = 1, q = 2
+输出：1
+ 
+
+提示：
+
+树中节点数目在范围 [2, 105] 内。
+-109 <= Node.val <= 109
+所有 Node.val 互不相同 。
+p != q
+p 和 q 均存在于给定的二叉树中。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode236) {
+  // TODO 目前算法使用的是转换为相交链表
+}
+
+/*
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点
+p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x
+的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+例如，给定如下二叉搜索树:  root = [6,2,8,0,4,7,9,null,null,3,5]
+
+
+
+ 
+
+示例 1:
+
+输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+输出: 6
+解释: 节点 2 和节点 8 的最近公共祖先是 6。
+示例 2:
+
+输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+输出: 2
+解释: 节点 2 和节点 4 的最近公共祖先是 2,
+因为根据定义最近公共祖先节点可以为节点本身。  
+
+说明:
+
+所有节点的值都是唯一的。
+p、q 为不同节点且均存在于给定的二叉搜索树中。
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/lowest-common-ancestor-of-a-binary-search-tree
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(tree, leetcode235) {
+  // TODO 未测试 即处于[p, q]时则为待寻找
 }
