@@ -749,66 +749,36 @@ public:
     }
   }
 
-  TreeNode *FindTobeDelete(TreeNode *root, int val) {
+  TreeNode *DeleteBstTree(TreeNode *root, int val) {
     if (root == nullptr) {
       return nullptr;
     }
 
-    TreeNode *tmp = nullptr;
-    if (root->val > val && root->left) {
-      tmp = FindTobeDelete(root->left, val);
-    } else if (root->val < val && root->right) {
-      tmp = FindTobeDelete(root->right, val);
+    if (root->val < val) {
+      return root->right = DeleteBstTree(root->right, val);
+    } else if (root->val > val) {
+      return root->left = DeleteBstTree(root->left, val);
     } else {
-      tmp = root;
+      // 找到了
+      if (root->left == nullptr) {
+        return root->right;
+      } else if (root->right == nullptr) {
+        return root->left;
+      } else {
+        TreeNode *cur = root->right;
+        while (cur->left) {
+          cur = cur->left;
+        }
+        cur->left = root->left;
+        TreeNode *tmp = root;
+        root = root->right;
+        delete tmp;
+        return root;
+      }
     }
-    return tmp;
   }
 
-  TreeNode *FindLeft(TreeNode *root) {
-    if (root == nullptr) {
-      return root;
-    }
-
-    TreeNode *tmp = nullptr;
-    if (root->left) {
-      tmp = FindLeft(root->left);
-    } else {
-      tmp = root;
-    }
-    return tmp;
-  }
-
-  TreeNode *FindRight(TreeNode *root) {
-    if (root == nullptr) {
-      return root;
-    }
-
-    TreeNode *tmp = nullptr;
-    if (root->right) {
-      tmp = FindRight(root->right);
-    } else {
-      tmp = root;
-    }
-    return tmp;
-  }
-
-  void DeleteBstTree(int val) {
-    TreeNode *node = FindTobeDelete(dummy, val);
-    TreeNode *tmp = nullptr;
-    if (node->right) {
-      // 找右子树最左
-      tmp = FindLeft(node->right);
-    } else if (node->left) {
-      // 找左子树最右
-      tmp = FindRight(node->left);
-    } else {
-      // 左右都没有 直接删
-      tmp = node;
-    }
-    node->val = tmp->val;
-    tmp->val = -1;
-  }
+  void DeleteBstTree(int val) { DeleteBstTree(dummy, val); }
 
 private:
   TreeNode *dummy;
@@ -1608,4 +1578,8 @@ TEST(tree, leetcode450) {
 
   cout << "delete" << endl;
   root->Print();
+}
+
+TEST(tree, leetcode669) {
+  
 }
