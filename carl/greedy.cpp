@@ -1,84 +1,82 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <iostream>
+#include <numeric>
 #include <string>
 #include <vector>
-#include <numeric>
-#include <algorithm>
 
 using namespace std;
 
 class Greedy {
 public:
-    Greedy(){}
-    ~Greedy(){}
+  Greedy() {}
+  ~Greedy() {}
 
-    int greedy_452(std::vector<std::vector<int>> &points) {
-        if (points.empty()) {
-            return 0;
-        }
-      std::sort(points.begin(), points.end(),
-                [](std::vector<int> &item1, std::vector<int> &item2) -> bool {
-                    return item1[0] < item2[0];
-                });
-
-        for (int i = 0; i < points.size(); i++) {
-            cout << points[i][0] << points[i][1] << endl;
-        }
-      int start = INT32_MIN;
-      int end = INT32_MAX;
-      int ret = 1;
-      for (int idx = 0; idx < points.size(); idx++) {
-            if (end < points[idx][0] || start > points[idx][1]) {
-                ret++;
-                start = points[idx][0];
-                end = points[idx][1];
-            } else {
-                start = std::max(points[idx][0], start);
-                end = std::min(points[idx][1], end);
-                std::cout << "start" << start << "end" << end << endl;
-            }
-        }
-        return ret;
-    }
-
-    int greedy_56(std::vector<std::vector<int>> &points,
-                   std::vector<std::vector<int>> &rets) {
-      if (points.empty()) {
-        return 0;
-      }
-      std::sort(points.begin(), points.end(),
-                [](std::vector<int> &item1, std::vector<int> &item2) -> bool {
-                  return item1[0] < item2[0];
-                });
-
-      for (int i = 0; i < points.size(); i++) {
-        cout << points[i][0] << points[i][1] << endl;
-      }
-
-      int start = points[0][0];
-      int end = points[0][1];
-
-      for (int idx = 0; idx < points.size(); idx++) {
-        if (points[idx][0] > end || points[idx][1] < start) {
-            rets.emplace_back(std::vector<int>{start, end});
-            start = points[idx][0];
-            end = points[idx][1];
-        } else {
-            start = std::min(start, points[idx][0]);
-            end = std::max(end, points[idx][1]);
-            std::cout << "start" << start << "end" << end << endl;
-        }
-      }
-      rets.emplace_back(std::vector<int>{start, end});
-
+  int greedy_452(std::vector<std::vector<int>> &points) {
+    if (points.empty()) {
       return 0;
     }
+    std::sort(points.begin(), points.end(),
+              [](std::vector<int> &item1, std::vector<int> &item2) -> bool {
+                return item1[0] < item2[0];
+              });
+
+    for (int i = 0; i < points.size(); i++) {
+      cout << points[i][0] << points[i][1] << endl;
+    }
+    int start = INT32_MIN;
+    int end = INT32_MAX;
+    int ret = 1;
+    for (int idx = 0; idx < points.size(); idx++) {
+      if (end < points[idx][0] || start > points[idx][1]) {
+        ret++;
+        start = points[idx][0];
+        end = points[idx][1];
+      } else {
+        start = std::max(points[idx][0], start);
+        end = std::min(points[idx][1], end);
+        std::cout << "start" << start << "end" << end << endl;
+      }
+    }
+    return ret;
+  }
+
+  int greedy_56(std::vector<std::vector<int>> &points,
+                std::vector<std::vector<int>> &rets) {
+    if (points.empty()) {
+      return 0;
+    }
+    std::sort(points.begin(), points.end(),
+              [](std::vector<int> &item1, std::vector<int> &item2) -> bool {
+                return item1[0] < item2[0];
+              });
+
+    for (int i = 0; i < points.size(); i++) {
+      cout << points[i][0] << points[i][1] << endl;
+    }
+
+    int start = points[0][0];
+    int end = points[0][1];
+
+    for (int idx = 0; idx < points.size(); idx++) {
+      if (points[idx][0] > end || points[idx][1] < start) {
+        rets.emplace_back(std::vector<int>{start, end});
+        start = points[idx][0];
+        end = points[idx][1];
+      } else {
+        start = std::min(start, points[idx][0]);
+        end = std::max(end, points[idx][1]);
+        std::cout << "start" << start << "end" << end << endl;
+      }
+    }
+    rets.emplace_back(std::vector<int>{start, end});
+
+    return 0;
+  }
 };
 
-TEST(greedy, hello) {
-    std::cout << "hello1" << std::endl;
-}
+TEST(greedy, hello) { std::cout << "hello1" << std::endl; }
 
 /**
 有一些球形气球贴在一堵用 XY
@@ -120,10 +118,10 @@ xend] 表示水平直径在 xstart 和 xend之间的气球。你不知道气
  */
 TEST(greedy, leetcode452) {
   std::unique_ptr<Greedy> ptr = std::make_unique<Greedy>();
-  std::vector<std::vector<int>> point1 = {{10, 16 }, { 2, 8 }, {1, 6 }, {7, 12 }};
+  std::vector<std::vector<int>> point1 = {{10, 16}, {2, 8}, {1, 6}, {7, 12}};
   std::cout << ptr->greedy_452(point1) << std::endl;
 
-  std::vector<std::vector<int>> point2 = {{1, 2},  {3, 4}, {5, 6}, {7, 8}};
+  std::vector<std::vector<int>> point2 = {{1, 2}, {3, 4}, {5, 6}, {7, 8}};
   std::cout << ptr->greedy_452(point2) << std::endl;
 
   std::vector<std::vector<int>> point3 = {{1, 2}, {2, 3}, {3, 4}, {4, 5}};

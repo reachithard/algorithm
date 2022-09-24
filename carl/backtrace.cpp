@@ -6,206 +6,200 @@
 
 using namespace std;
 
-class Backtrace
-{
+class Backtrace {
 private:
-    /* data */
+  /* data */
 public:
-    Backtrace(/* args */) {
+  Backtrace(/* args */) {}
+  ~Backtrace() {}
 
-    }
-    ~Backtrace() {
-
-    }
-
-
-    bool IsPrime(std::vector<char> &ret) {
-        int left = 0;
-        int right = ret.size() - 1;
-        for (; left <= right; left++, right--) {
-            if (ret[left] != ret[right]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    bool IsPalindrome(std::string &s, int start, int end) {
-      int left = start;
-      int right = end;
-      for (; left < right; left++, right--) {
-        if (s[left] != s[right]) {
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    void backtrace_131(std::string &s, std::vector<std::vector<std::string>> &rets, std::vector<string> &ret, int start) {
-        if (start >= s.size()) {
-            rets.push_back(ret);
-            return;
-        }
-
-        for (int idx = start; idx < s.size(); idx++) {
-            if (IsPalindrome(s, start, idx)) {
-                std::string tmp = s.substr(start, idx - start + 1);
-                ret.push_back(tmp);
-            } else {
-                continue;
-            }
-
-            backtrace_131(s, rets, ret, idx + 1);
-            ret.pop_back();
-        }
-    }
-
-    bool IsValidIp(std::string &s, int start, int end) {
-        if (s.size() > 1 && s[0] == 0) {
-            return false;
-        } 
-        std::string tmp = s.substr(start, end - start + 1);
-        long long ip = std::stoll(tmp);
-        return ip >= 0 && ip <= 255;
-    }
-
-    void backtrace_93(std::string &s,
-                       std::vector<std::vector<std::string>> &rets,
-                       std::vector<string> &ret, int start) {
-      if (ret.size() == 4 && start >= s.size()) {
-        rets.push_back(ret);
-        return;
-      }
-
-      for (int idx = start; idx < s.size(); idx++) {
-        if (IsValidIp(s, start, idx)) {
-          std::string tmp = s.substr(start, idx - start + 1);
-          ret.push_back(tmp);
-        } else {
-          continue;
-        }
-
-        backtrace_93(s, rets, ret, idx + 1);
-        ret.pop_back();
+  bool IsPrime(std::vector<char> &ret) {
+    int left = 0;
+    int right = ret.size() - 1;
+    for (; left <= right; left++, right--) {
+      if (ret[left] != ret[right]) {
+        return false;
       }
     }
 
-    void backtrace_78(std::vector<int> &nums, std::vector<std::vector<int>> &rets,
-                      std::vector<int> &ret, int start) {
+    return true;
+  }
+
+  bool IsPalindrome(std::string &s, int start, int end) {
+    int left = start;
+    int right = end;
+    for (; left < right; left++, right--) {
+      if (s[left] != s[right]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  void backtrace_131(std::string &s,
+                     std::vector<std::vector<std::string>> &rets,
+                     std::vector<string> &ret, int start) {
+    if (start >= s.size()) {
       rets.push_back(ret);
-    
+      return;
+    }
+
+    for (int idx = start; idx < s.size(); idx++) {
+      if (IsPalindrome(s, start, idx)) {
+        std::string tmp = s.substr(start, idx - start + 1);
+        ret.push_back(tmp);
+      } else {
+        continue;
+      }
+
+      backtrace_131(s, rets, ret, idx + 1);
+      ret.pop_back();
+    }
+  }
+
+  bool IsValidIp(std::string &s, int start, int end) {
+    if (s.size() > 1 && s[0] == 0) {
+      return false;
+    }
+    std::string tmp = s.substr(start, end - start + 1);
+    long long ip = std::stoll(tmp);
+    return ip >= 0 && ip <= 255;
+  }
+
+  void backtrace_93(std::string &s, std::vector<std::vector<std::string>> &rets,
+                    std::vector<string> &ret, int start) {
+    if (ret.size() == 4 && start >= s.size()) {
+      rets.push_back(ret);
+      return;
+    }
+
+    for (int idx = start; idx < s.size(); idx++) {
+      if (IsValidIp(s, start, idx)) {
+        std::string tmp = s.substr(start, idx - start + 1);
+        ret.push_back(tmp);
+      } else {
+        continue;
+      }
+
+      backtrace_93(s, rets, ret, idx + 1);
+      ret.pop_back();
+    }
+  }
+
+  void backtrace_78(std::vector<int> &nums, std::vector<std::vector<int>> &rets,
+                    std::vector<int> &ret, int start) {
+    rets.push_back(ret);
+
     if (start >= nums.size()) {
-        return;
+      return;
     }
 
     for (int idx = start; idx < nums.size(); idx++) {
-            ret.push_back(nums[idx]);
-            backtrace_78(nums, rets, ret, idx + 1);
-            ret.pop_back();
-        }
+      ret.push_back(nums[idx]);
+      backtrace_78(nums, rets, ret, idx + 1);
+      ret.pop_back();
+    }
+  }
+
+  void backtrace_47(std::vector<int> &nums, std::vector<std::vector<int>> &rets,
+                    std::vector<int> &ret, vector<int> &used) {
+    if (ret.size() == nums.size()) {
+      rets.push_back(ret);
+      return;
     }
 
-    void backtrace_47(std::vector<int> &nums,
-                      std::vector<std::vector<int>> &rets,
-                      std::vector<int> &ret, vector<int> &used) {
-      if (ret.size() == nums.size()) {
-        rets.push_back(ret);
-        return;
+    for (int idx = 0; idx < nums.size(); idx++) {
+      // 去重 说明同一层已经被选中过了 这个是第二个1 {1， 1， 2， 2}
+      if (idx > 0 && nums[idx] == nums[idx - 1] && used[idx - 1] == 0) {
+        continue;
       }
 
-      for (int idx = 0; idx < nums.size(); idx++) {
-        // 去重 说明同一层已经被选中过了 这个是第二个1 {1， 1， 2， 2}
-        if (idx > 0 && nums[idx] == nums[idx - 1] && used[idx - 1] == 0) {
+      if (used[idx] == 0) {
+        used[idx] = 1;
+        ret.push_back(nums[idx]);
+
+        backtrace_47(nums, rets, ret, used);
+        used[idx] = 0;
+        ret.pop_back();
+      }
+    }
+  }
+
+  bool IsValidQueue(std::vector<std::vector<char>> &ret) {
+    // 如果矩阵里面的皇后全是正常
+    struct pos {
+      int x;
+      int y;
+    };
+
+    std::vector<pos> position;
+    for (int i = 0; i < ret.size(); i++) {
+      for (int j = 0; j < ret[i].size(); j++) {
+        if (ret[i][j] == 'Q') {
+          pos tmp;
+          tmp.x = i;
+          tmp.y = j;
+          position.push_back(tmp);
+        }
+      }
+    }
+
+    // 进行斜率判断
+    for (int i = 0; i < position.size(); i++) {
+      for (int j = 0; j < position.size(); j++) {
+        if (i == j) {
           continue;
         }
 
-        if (used[idx] == 0) {
-          used[idx] = 1;
-          ret.push_back(nums[idx]);
+        if (position[i].x == position[j].x || position[i].y == position[j].y) {
+          return false;
+        }
 
-          backtrace_47(nums, rets, ret, used);
-          used[idx] = 0;
-          ret.pop_back();
+        if (abs(position[i].x - position[j].x) ==
+            abs(position[i].y - position[j].y)) {
+          return false;
         }
       }
     }
 
-    bool IsValidQueue(std::vector<std::vector<char>> &ret) {
-      // 如果矩阵里面的皇后全是正常 
-      struct pos {
-        int x;
-        int y;
-      };
+    return true;
+  }
 
-      std::vector<pos> position;
-      for (int i = 0; i < ret.size(); i++) {
-        for (int j = 0; j < ret[i].size(); j++) {
-          if (ret[i][j] == 'Q') {
-            pos tmp;
-            tmp.x = i;
-            tmp.y = j;
-            position.push_back(tmp);
-          }
-        }
-      }
-
-      // 进行斜率判断
-      for (int i = 0; i < position.size(); i++) {
-        for (int j = 0; j < position.size(); j++) {
-          if (i == j) {
-            continue;
-          }
-
-          if (position[i].x == position[j].x || position[i].y == position[j].y) {
-            return false;
-          }
-
-          if (abs(position[i].x - position[j].x) == abs(position[i].y - position[j].y)) {
-            return false;
-          }
-        }
-      }
-
-      return true;
+  void backtrace_51(int n, std::vector<std::vector<std::vector<char>>> &rets,
+                    std::vector<std::vector<char>> &ret, int row) {
+    if (IsValidQueue(ret) && row == n) {
+      rets.push_back(ret);
+      return;
     }
 
-    void backtrace_51(int n, std::vector<std::vector<std::vector<char>>> &rets,
-                      std::vector<std::vector<char>> &ret, int row) {
-      if (IsValidQueue(ret) && row == n) {
-        rets.push_back(ret);
-        return;
-      }
-
-      for (int col = 0; col < n; col++) {
-        if (IsValidQueue(ret)) {
-          ret[row][col] = 'Q';
-          backtrace_51(n, rets, ret, row + 1);
-          ret[row][col] = '.';
-        }
+    for (int col = 0; col < n; col++) {
+      if (IsValidQueue(ret)) {
+        ret[row][col] = 'Q';
+        backtrace_51(n, rets, ret, row + 1);
+        ret[row][col] = '.';
       }
     }
+  }
 };
 
-
 TEST(backtrace, leetcode131) {
-    std::string s = "aab";
-    std::vector<std::string> ret;
-    std::unique_ptr<Backtrace> ptr = std::make_unique<Backtrace>();
+  std::string s = "aab";
+  std::vector<std::string> ret;
+  std::unique_ptr<Backtrace> ptr = std::make_unique<Backtrace>();
 
-    std::vector<std::vector<std::string>> rets;
-    ptr->backtrace_131(s, rets, ret, 0);
+  std::vector<std::vector<std::string>> rets;
+  ptr->backtrace_131(s, rets, ret, 0);
 
-    for (int i = 0; i < rets.size(); i++) {
-        for (int j = 0; j < rets[i].size(); j++) {
-            cout << rets[i][j] << endl;
-        }
+  for (int i = 0; i < rets.size(); i++) {
+    for (int j = 0; j < rets[i].size(); j++) {
+      cout << rets[i][j] << endl;
     }
+  }
 
-    // vector<char> m{'a', 'b', 'b'};
-    // bool ispri = ptr->IsPrime(m);
-    // ASSERT_TRUE(ispri);
+  // vector<char> m{'a', 'b', 'b'};
+  // bool ispri = ptr->IsPrime(m);
+  // ASSERT_TRUE(ispri);
 }
 
 /*
@@ -260,7 +254,8 @@ TEST(backtrace, leetcode93) {
 }
 
 /*
-给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+给你一个整数数组 nums ，数组中的元素 互不相同
+。返回该数组所有可能的子集（幂集）。
 
 解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
 
@@ -386,7 +381,7 @@ TEST(backtrace, leetcode51) {
   for (int i = 0; i < rets.size(); i++) {
     cout << "start" << endl;
     for (int j = 0; j < rets[i].size(); j++) {
-      for(int k = 0; k < rets[i][j].size(); k++) {
+      for (int k = 0; k < rets[i][j].size(); k++) {
         cout << rets[i][j][k];
       }
       cout << endl;
