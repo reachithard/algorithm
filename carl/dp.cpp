@@ -469,6 +469,34 @@ public:
      }
      cout << endl;
    }
+
+   /*
+    dp[j] 为[0,j]能被组合出
+    dp[j] = (dp[j] == 1) || (dp[j - wordDict[i]] == 1 && match) ? 1 : 0;
+    dp[0] = 1;
+    */
+   std::vector<int> dp2(s.size() + 1, 0);
+   dp2[0] = 1;
+   for (int j = 0; j <= s.size(); j++) {
+    for (int i = 0; i < wordDict.size(); i++) {
+      std::string &tmp = wordDict[i];
+      if (j >= wordDict[i].size()) {
+        dp2[j] =
+            ((dp2[j] == 1) || (dp2[j - tmp.size()] == 1 &&
+                               strcmp(tmp.c_str(), s.substr(j - tmp.size(), tmp.size()).c_str()) == 0)
+                 ? 1
+                 : 0);
+      }
+    }
+   }
+
+   cout << "dp2 " << endl;
+   for (int i = 0; i < dp2.size(); i++) {
+     cout << dp2[i] << " ";
+   }
+   cout << endl;
+   cout << "dp2 " << endl;
+   return dp.back().back() == 1;
   }
 
 };
@@ -802,4 +830,41 @@ TEST(dp, leetcode_139) {
   std::vector<std::string> word3 = {"cats", "dog", "sand", "and", "cat"};
   std::string s3 = "catsandog";
   ptr->dp_139(s3, word3);
+}
+
+/*
+给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+
+你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子
+卖出该股票。设计一个算法来计算你所能获取的最大利润。
+
+返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+ 
+
+示例 1：
+
+输入：[7,1,5,3,6,4]
+输出：5
+解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 =
+6）的时候卖出，最大利润 = 6-1 = 5 。 注意利润不能是 7-1 = 6,
+因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。 示例 2：
+
+输入：prices = [7,6,4,3,1]
+输出：0
+解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+ 
+
+提示：
+
+1 <= prices.length <= 105
+0 <= prices[i] <= 104
+通过次数928,686提交次数1,597,269
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/best-time-to-buy-and-sell-stock
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(dp, leetcode_121) {
+
 }
