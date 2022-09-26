@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <climits>
+#include <cmath>
 
 using namespace std;
 
@@ -379,7 +380,96 @@ public:
     return dp.back().back();
   }
 
-  
+  int dp_279(int num) {
+    /*
+        dp[i][j]为前i个数 的平方和为j的最小个数
+        dp[i][j] = std::min(dp[i - 1][j], dp[i][j - t * t] + 1) t在 0 到i内
+        dp[0][0] = 0;
+    */
+    int qrt = sqrt(num) + 1;
+    std::vector<std::vector<int>> dp(qrt + 1, std::vector<int>(num + 1, 1000));
+    for (int i = 0; i < dp.size(); i++) {
+      dp[i][0] = 0;
+    }
+
+    // for (int i = 0; i < dp[0].size(); i++) {
+    //   dp[0][i] = 0;
+    // }
+    for (int i = 1; i * i <= num; i++) {
+      for (int j = 1; j <= num; j++) {
+        if (j < i * i) {
+          dp[i][j] = dp[i - 1][j];
+        } else {
+          // for (int k = 0; k * k <= j; k++) {
+            dp[i][j] = std::min(dp[i - 1][j], dp[i][j - i * i] + 1);
+          // }
+        }
+      }
+    }
+
+    for (int i = 0; i < dp.size() - 1; i++) {
+      for (int j = 0; j < dp[i].size(); j++) {
+        cout << dp[i][j] << " ";
+      }
+      cout << endl;
+    }
+
+    /*
+      dp[j] 为值为j时的最小数据构成
+      dp[j] = std::min(dp[j], dp[j - i * i])
+    */
+   std::vector<int> dp2(num + 1, INT_MAX);
+   dp2[0] = 0;
+   for (int i = 1; i * i <= num; i++) {
+     for (int j = i * i; j <= num; j++) {
+       dp2[j] = std::min(dp2[j], dp2[j - i * i] + 1);
+     }
+    }
+
+    cout << "dp2 " << endl;
+    for (int i = 0; i < dp2.size(); i++) {
+      cout << dp2[i] << " ";
+    }
+    cout << endl;
+    cout << "dp2 " << endl;
+  }
+
+  bool dp_139(std::string &s, std::vector<std::string> &wordDict) {
+    /*
+    dp[i][j] 表示由前wordict[i]个字符串 组合起来长度为j的字符是否与s[0, j]匹配
+    dp[i][j] = true worddict[i] ∈ s(j - worddict, j)
+    else dp[i][j] = false
+    */
+   std::vector<std::vector<int>> dp(wordDict.size() + 1, std::vector<int>(s.size() + 1, 0));
+   dp[0][0] = 1;
+   for (int j = 0; j <= s.size(); j++) {
+    for (int i = 1; i <= wordDict.size(); i++) {
+      std::string &ref = wordDict[i - 1];
+      if (j < ref.size()) {
+        dp[i][j] = dp[i - 1][j];
+      } else {
+        for (int k = 0; k < i; k++) {
+          std::string &tt = wordDict[k];
+          if (dp[i][j - tt.size()] == 1 &&
+              strcmp(tt.c_str(), s.substr(j - tt.size(), tt.size()).c_str()) == 0) {
+            dp[i][j] = 1;
+          } else {
+            if (dp[i][j] == 0) {
+              dp[i][j] = dp[i - 1][j];
+            }
+          }
+        }
+      }
+    }
+   }
+
+   for (int i = 0; i < dp.size(); i++) {
+     for (int j = 0; j < dp[i].size(); j++) {
+       cout << dp[i][j] << " ";
+     }
+     cout << endl;
+   }
+  }
 
 };
 
@@ -656,5 +746,60 @@ TEST(dp, leetcode_322) {
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
 TEST(dp, leetcode_279) {
+  std::unique_ptr<Dp> ptr = std::make_unique<Dp>();
+  ptr->dp_279(12);
+  ptr->dp_279(13);
+  ptr->dp_279(30);
+}
 
+/*
+给你一个字符串 s 和一个字符串列表 wordDict
+作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。
+
+注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。
+
+ 
+
+示例 1：
+
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以由 "leet" 和 "code" 拼接成。
+示例 2：
+
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以由 "apple" "pen" "apple" 拼接成。
+     注意，你可以重复使用字典中的单词。
+示例 3：
+
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+ 
+
+提示：
+
+1 <= s.length <= 300
+1 <= wordDict.length <= 1000
+1 <= wordDict[i].length <= 20
+s 和 wordDict[i] 仅有小写英文字母组成
+wordDict 中的所有字符串 互不相同
+
+来源：力扣（LeetCode）
+链接：https://leetcode.cn/problems/word-break
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+*/
+TEST(dp, leetcode_139) { 
+  std::unique_ptr<Dp> ptr = std::make_unique<Dp>();
+  std::vector<std::string> word = {"leet", "code"};
+  std::string s = "leetcode";
+  ptr->dp_139(s, word);
+
+  std::vector<std::string> word2 = {"apple", "pen"};
+  std::string s2 = "applepenapple";
+  ptr->dp_139(s2, word2);
+
+  std::vector<std::string> word3 = {"cats", "dog", "sand", "and", "cat"};
+  std::string s3 = "catsandog";
+  ptr->dp_139(s3, word3);
 }
